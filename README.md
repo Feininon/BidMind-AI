@@ -269,29 +269,7 @@ bidmind-ai/
 |----------|-------------|
 | `/ws/bid/{auction_id}` | Real-time bidding WebSocket |
 
----
 
-##  Testing
-
-### Manual Testing Checklist
-- [ ] Register new account
-- [ ] Login successfully
-- [ ] Create an auction
-- [ ] View auction on dashboard
-- [ ] Place a bid (wait for WebSocket connection)
-- [ ] Check AI price prediction
-- [ ] Use chat assistant
-- [ ] Create auto-bidding bot
-- [ ] Update profile
-- [ ] View analytics dashboard
-
-### API Testing
-Use the interactive API docs at:
-```
-http://localhost:8000/docs
-```
-
----
 
 ## 🤖 AI Model Training (Optional)
 
@@ -312,30 +290,7 @@ python scripts/train_models.py
 ### 3. Save Models
 Models will be saved to `/models/` folder automatically.
 
----
 
-## 🚀 Deployment
-
-### Docker Deployment
-```bash
-# Build image
-docker build -t bidmind-ai .
-
-# Run container
-docker run -p 8000:8000 --env-file .env bidmind-ai
-```
-
-### Production Checklist
-- [ ] Use PostgreSQL instead of SQLite
-- [ ] Add JWT authentication
-- [ ] Enable HTTPS
-- [ ] Set up proper logging
-- [ ] Configure rate limiting
-- [ ] Add input validation
-- [ ] Set up monitoring (Prometheus/Grafana)
-- [ ] Configure backups
-
----
 
 ## 📊 Performance Metrics
 
@@ -349,113 +304,6 @@ docker run -p 8000:8000 --env-file .env bidmind-ai
 
 ---
 
-## 🎨 Screenshots
 
-### Dashboard
-![Dashboard](screenshots/dashboard.png)
 
-### Live Bidding
-![Live Bidding](screenshots/auction.png)
 
-### Analytics
-![Analytics](screenshots/analytics.png)
-
-### Profile
-![Profile](screenshots/profile.png)
-
-*Add your screenshots to `/screenshots` folder*
-
----
-
-## 🔮 Future Improvements
-
-- [ ] Real image upload & computer vision analysis
-- [ ] Payment gateway integration (Stripe/PayPal)
-- [ ] Email notifications
-- [ ] Mobile app (React Native)
-- [ ] Advanced ML models (Deep Learning)
-- [ ] Multi-language support
-- [ ] Admin dashboard
-- [ ] Auction categories & filters
-- [ ] Watchlist feature
-- [ ] Social sharing
-
----
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍ Author
-
-**Your Name**  
-Web Dev/AI Intern Candidate
-
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your Profile](https://linkedin.com/in/yourprofile)
-- Email: your.email@example.com
-
----
-
-## 🙏 Acknowledgments
-
-- [FastAPI](https://fastapi.tiangolo.com) - Modern web framework
-- [Groq](https://groq.com) - Fast AI inference API
-- [Scikit-Learn](https://scikit-learn.org) - Machine learning library
-- [SQLAlchemy](https://sqlalchemy.org) - Database ORM
-- [Chart.js](https://chartjs.org) - Data visualization
-
----
-
-## 📞 Support
-
-For issues, questions, or contributions:
-1. Open an issue on GitHub
-2. Email: your.email@example.com
-3. Check existing documentation
-
----
-
-<div align="center">
-
-**Made with ❤️ and ☕ by Your Name**
-
-⭐ Star this repo if you found it helpful!
-
-</div>
-```
-
----
-
-## ✅ How to Use This README
-
-1. **Save as `README.md`** in your project root folder
-2. **Update the following:**
-   - Replace `yourusername` with your GitHub username
-   - Replace `your.email@example.com` with your email
-   - Add your LinkedIn profile link
-   - Add actual screenshots (take screenshots and save to `/screenshots` folder)
-3. **Push to GitHub:**
-   ```bash
-   git add README.md
-   git commit -m "Add comprehensive README"
-   git push origin main
-   ```
-
----
-
-## 🎯 What This README Shows Recruiters
-
-| Section | What It Proves |
-|---------|---------------|
-| **Features** | You can build complex systems |
-| **Tech Stack** | You know modern tools |
-| **AI Integration** | You can apply ML in real projects |
-| **API Docs** | You understand backend architecture |
-| **Deployment** | You know DevOps basics |
-| **Testing** | You follow best practices |
-| **Future Improvements** | You think ahead |
-
----
