@@ -1,0 +1,12 @@
+body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
+header { background: #1a1a2e; color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+.badge { background: #16213e; padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; margin-left: 10px; }
+.badge.ai { background: #6f42c1; }
+.container { max-width: 800px; margin: 20px auto; padding: 0 20px; }
+.card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+input, textarea, button { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+button { background: #0f3460; color: white; border: none; cursor: pointer; font-weight: bold; }
+button:hover { background: #16213e; }
+.bid-log { height: 300px; overflow-y: auto; border: 1px solid #eee; background: #fafafa; padding: 10px; }
+.log-entry { padding: 8px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+.ai-result { background: #e9ecef; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 0.9rem; }

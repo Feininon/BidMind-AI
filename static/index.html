@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BidMind AI | Real-Time Auction</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🚀 BidMind AI</h1>
+        <span class="badge">WebSocket Enabled</span>
+        <span class="badge ai">AI Powered</span>
+    </header>
+
+    <div class="container">
+        <!-- Create Auction Section -->
+        <section class="card">
+            <h2>Create Auction</h2>
+            <input type="text" id="title" placeholder="Item Title">
+            <textarea id="desc" placeholder="Item Description (AI will analyze)"></textarea>
+            <input type="number" id="startPrice" placeholder="Starting Price">
+            <button onclick="createAuction()">Launch Auction</button>
+            <div id="ai-analysis-result" class="ai-result"></div>
+        </section>
+
+        <!-- Live Bidding Section -->
+        <section class="card">
+            <h2>Live Bidding Room</h2>
+            <div class="bid-controls">
+                <input type="number" id="bidAmount" placeholder="Your Bid">
+                <input type="text" id="userId" placeholder="User ID" value="User_01">
+                <button onclick="placeBid()">Place Bid</button>
+            </div>
+            <div class="ai-stats">
+                <p>AI Predicted Close: <strong id="pred-price">--</strong></p>
+                <p>Status: <strong id="conn-status">Disconnected</strong></p>
+            </div>
+            <div class="bid-log" id="bidLog"></div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
