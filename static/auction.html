@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BidMind AI - Live Auction</title>
+    <link rel="stylesheet" href="/static/style.css">  
+</head>
+<body>
+    <header>
+        <h1>🚀 BidMind AI</h1>
+        <nav>
+            <a href="/dashboard">← Dashboard</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="grid grid-2">
+            <!-- Auction Details -->
+            <div class="card">
+                <h2 id="auctionTitle">Loading...</h2>
+                <p id="auctionDesc" style="color:#666; margin:1rem 0;"></p>
+                <div class="countdown" id="countdown">--:--:--</div>
+                <div style="margin:1rem 0;">
+                    <span class="price" id="currentBid">$0</span>
+                    <span class="ai-badge">AI Forecast: $<span id="aiPrediction">--</span></span>
+                </div>
+                <div id="bidStatus" class="alert hidden"></div>
+            </div>
+
+            <!-- Bidding Panel -->
+            <div class="card">
+                <h3>💰 Place Your Bid</h3>
+                <input type="number" id="bidAmount" placeholder="Enter bid amount" min="1" step="0.01">
+                <button id="bidBtn" onclick="placeBid()">Place Bid</button>
+                <p style="font-size:0.9rem; color:#666; margin-top:0.5rem;">
+                    Your balance: $<span id="userBalance">1000</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Live Feed + History -->
+        <div class="card">
+            <h3>📡 Live Bid Feed</h3>
+            <div class="bid-log" id="bidLog">
+                <div class="log-entry"><span>System</span> <span>Connecting to auction...</span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📜 Bid History</h3>
+            <div id="bidHistory" class="bid-log"></div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if(!user) location.href = '/';
+        
+        const AUCTION_ID = {{AUCTION_ID}}; // Replaced by backend
+        let ws;
+        let countdownInterval;
+
+        function connectWebSocket() {
+            ws = new WebSocket(`ws://${location.host}/ws/bid/${AUCTION_ID}`);
+            
+            ws.onopen = () => {
+                addLog("System", "✅ Connected to auction", "success");
+                loadBidHistory();
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                
+                if(data.type === 'init') {
+                    document.getElementById('auctionTitle').textContent = data.auction.title;
+                    document.getElementById('currentBid').textContent = `$${data.auction.current_bid}`;
+                    document.getElementById('aiPrediction').textContent = data.auction.ai_prediction?.toFixed(2) || '--';
+                    startCountdown(data.auction.end_time);
+                }
+                else if(data.type === 'bid_update') {
+                    document.getElementById('currentBid').textContent = `$${data.current_bid}`;
+                    document.getElementById('aiPrediction').textContent = data.ai_prediction?.toFixed(2) || '--';
+                    addLog(`User ${data.user_id}`, `$${data.amount} • AI: $${data.ai_prediction?.toFixed(2)}`);
+                    updateCountdown(data.time_left_seconds);
+                }
+                else if(data.type === 'auction_ended') {
+                    clearInterval(countdownInterval);
+                    document.getElementById('countdown').textContent = "ENDED";
+                    document.getElementById('countdown').classList.add('urgent');
+                    document.getElementById('bidBtn').disabled = true;
+                    addLog("System", "🏁 Auction ended!", "success");
+                }
+                else if(data.status === 'rejected') {
+                    showStatus(data.reason, 'error');
+                }
+            };
+            
+            ws.onclose = () => {
+                addLog("System", "🔌 Disconnected. Reconnecting...", "error");
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        function startCountdown(endTimeISO) {
+            const endTime = new Date(endTimeISO).getTime();
+            updateCountdownTimer(endTime);
+            countdownInterval = setInterval(() => updateCountdownTimer(endTime), 1000);
+        }
+
+        function updateCountdownTimer(endTime) {
+            const now = new Date().getTime();
+            const diff = Math.max(0, endTime - now);
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            const el = document.getElementById('countdown');
+            el.textContent = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+            
+            // Urgent styling for last minute
+            if(diff < 60000) el.classList.add('urgent');
+            else el.classList.remove('urgent');
+            
+            return diff;
+        }
+
+        function updateCountdown(seconds) {
+            // Optional: sync with server time if needed
+        }
+
+        async function placeBid() {
+            const amount = parseFloat(document.getElementById('bidAmount').value);
+            const btn = document.getElementById('bidBtn');
+            
+            if(!amount || amount <= 0) {
+                showStatus("Enter a valid bid amount", 'error');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = "Processing...";
+            
+            try {
+                ws.send(JSON.stringify({
+                    auction_id: AUCTION_ID,
+                    amount: amount,
+                    user_id: user.user_id,
+                    // Send context for AI prediction
+                    starting_price: parseFloat(document.getElementById('currentBid').textContent.replace('$','')),
+                    duration: 24,
+                    time_left: parseInt(document.getElementById('countdown').textContent.split(':')[1])
+                }));
+                document.getElementById('bidAmount').value = '';
+            } catch(e) {
+                showStatus("Connection error", 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Place Bid";
+            }
+        }
+
+        async function loadBidHistory() {
+            const res = await fetch(`/api/auctions/${AUCTION_ID}/history`);
+            const bids = await res.json();
+            const container = document.getElementById('bidHistory');
+            container.innerHTML = bids.map(b => `
+                <div class="log-entry">
+                    <span>User ${b.user_id}</span>
+                    <span>$${b.amount} • ${new Date(b.timestamp).toLocaleTimeString()}</span>
+                </div>
+            `).join('') || '<div class="log-entry"><span>No bids yet</span></div>';
+        }
+
+        function addLog(user, msg, type='') {
+            const log = document.getElementById('bidLog');
+            const div = document.createElement('div');
+            div.className = `log-entry ${type}`;
+            div.innerHTML = `<span><strong>${user}</strong></span> <span>${msg}</span>`;
+            log.prepend(div);
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('bidStatus');
+            el.textContent = msg;
+            el.className = `alert ${type}`;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 3000);
+        }
+
+        // Initialize
+        document.getElementById('userBalance').textContent = user.balance;
+        connectWebSocket();
+    </script>
+</body>
+</html>

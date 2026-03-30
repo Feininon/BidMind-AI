@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BidMind AI - History</title>
+    <link rel="stylesheet" href="/static/style.css">  
+</head>
+<body>
+    <header>
+        <h1>🚀 BidMind AI</h1>
+        <nav>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/create">Create Auction</a>
+            <a href="/history">History</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>📜 My Bidding History</h2>
+            <button onclick="loadHistory()">🔄 Refresh</button>
+            <div id="bidHistory" class="bid-log" style="height: auto; margin-top: 1rem;"></div>
+        </div>
+
+        <div class="card">
+            <h2>📦 My Auctions</h2>
+            <div id="myAuctions" class="grid grid-2" style="margin-top: 1rem;"></div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if(!user) location.href = '/';
+
+        async function loadHistory() {
+            try {
+                const res = await fetch(`/api/users/${user.user_id}/history`);
+                const data = await res.json();
+                
+                // Render bid history
+                const bidContainer = document.getElementById('bidHistory');
+                if(data.bids.length === 0) {
+                    bidContainer.innerHTML = '<div class="log-entry">No bids yet</div>';
+                } else {
+                    bidContainer.innerHTML = data.bids.map(bid => `
+                        <div class="log-entry">
+                            <span>
+                                <strong>Auction #${bid.auction_id}</strong><br>
+                                <small>${new Date(bid.timestamp).toLocaleString()}</small>
+                            </span>
+                            <span style="text-align: right;">
+                                <strong style="color: var(--primary);">$${bid.amount}</strong><br>
+                                <small>${bid.won ? '✅ Won' : '⏳ Pending'}</small>
+                            </span>
+                        </div>
+                    `).join('');
+                }
+                
+                // Render my auctions
+                const auctionContainer = document.getElementById('myAuctions');
+                if(data.auctions.length === 0) {
+                    auctionContainer.innerHTML = '<p>No auctions created yet</p>';
+                } else {
+                    auctionContainer.innerHTML = data.auctions.map(a => `
+                        <div class="card auction-card">
+                            <h3>${a.title}</h3>
+                            <p>Final Price: <strong>$${a.final_price}</strong></p>
+                            <span class="badge">${a.status}</span>
+                            <button onclick="location.href='/auction/${a.id}'" style="margin-top: 0.5rem;">
+                                View
+                            </button>
+                        </div>
+                    `).join('');
+                }
+            } catch(err) {
+                console.error('Error loading history:', err);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            location.href = '/';
+        }
+
+        loadHistory();
+    </script>
+</body>
+</html>

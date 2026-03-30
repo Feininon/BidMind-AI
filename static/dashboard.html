@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BidMind AI - Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">  
+</head>
+<body>
+    <header>
+        <h1>🚀 BidMind AI</h1>
+        <nav>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/create">Create Auction</a>
+            <a href="/history">History</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>🎯 Active Auctions</h2>
+            <button onclick="loadAuctions()">🔄 Refresh</button>
+            <div id="auctionList" class="grid grid-2" style="margin-top: 1rem;"></div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if(!user) location.href = '/';
+        
+        async function loadAuctions() {
+            const res = await fetch('/api/auctions?active_only=true');
+            const auctions = await res.json();
+            const container = document.getElementById('auctionList');
+            container.innerHTML = auctions.map(a => `
+                <div class="card auction-card">
+                    <h3>${a.title}</h3>
+                    <p style="color:#666; margin:0.5rem 0;">${a.description.substring(0,100)}...</p>
+                    <div class="price">$${a.current_bid}</div>
+                    <p><small>AI Forecast: $${a.ai_prediction?.toFixed(2) || 'N/A'}</small></p>
+                    <button onclick="location.href='/auction/${a.id}'">View & Bid</button>
+                </div>
+            `).join('');
+        }
+        function logout() {
+            localStorage.removeItem('user');
+            location.href = '/';
+        }
+        loadAuctions();
+        // Auto-refresh every 30s
+        setInterval(loadAuctions, 30000);
+    </script>
+</body>
+</html>
