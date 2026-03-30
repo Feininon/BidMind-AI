@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BidMind AI - History</title>
+    <title>BidMind AI - Chat</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -14,26 +14,24 @@
             <a href="/dashboard" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; background: rgba(255,255,255,0.1);">📋 Dashboard</a>
             <a href="/create" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; background: rgba(255,255,255,0.1);">➕ Create</a>
             <a href="/analytics" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; background: rgba(255,255,255,0.1);">📊 Analytics</a>
-            <a href="/chat" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; background: rgba(255,255,255,0.1);">💬 Chat</a>
+            <a href="/chat" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; background: rgba(255,255,255,0.2);">💬 Chat</a>
             <a href="/bot" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; background: rgba(255,255,255,0.1);">🤖 Bot</a>
-            <a href="/history" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; background: rgba(255,255,255,0.2);">📜 History</a>
+            <a href="/history" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; background: rgba(255,255,255,0.1);">📜 History</a>
         <a href="/profile" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; background: rgba(255,255,255,0.1);">👤 Profile</a>
-    </nav>
+        </nav>
         <div id="userSection"></div>
     </header>
     <!-- HEADER END -->
 
     <div class="container">
-        <h2>📜 My Activity</h2>
-        
-        <div class="grid grid-2">
-            <div class="card">
-                <h3>💰 My Bids</h3>
-                <div id="myBids" class="bid-log" style="height: 300px;"><p>Loading...</p></div>
+        <div class="card">
+            <h2>💬 AI Chat Assistant</h2>
+            <div id="chatMessages" class="bid-log" style="height: 400px;">
+                <div class="chat-message ai"><strong>🤖 AI:</strong> Hello! Ask me about auctions.</div>
             </div>
-            <div class="card">
-                <h3>📦 My Auctions</h3>
-                <div id="myAuctions" class="bid-log" style="height: 300px;"><p>Loading...</p></div>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <input type="text" id="chatInput" placeholder="Type your message..." style="flex: 1;">
+                <button class="btn-primary" onclick="sendMessage()" style="width: auto;">Send</button>
             </div>
         </div>
     </div>
@@ -45,33 +43,32 @@
         
         document.getElementById('userSection').innerHTML = `<span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 6px;">👤 ${user.username}</span>`;
         
-        async function loadHistory() {
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if(!message) return;
+            
+            const container = document.getElementById('chatMessages');
+            container.innerHTML += `<div class="log-entry"><strong>You:</strong> ${message}</div>`;
+            input.value = '';
+            
             try {
-                const res = await fetch(`/api/users/${user.user_id}/history`);
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message, user_id: user.user_id})
+                });
                 const data = await res.json();
-                
-                const bidsContainer = document.getElementById('myBids');
-                bidsContainer.innerHTML = data.bids.length ? data.bids.map(b => `
-                    <div class="log-entry">
-                        <span>Auction #${b.auction_id}</span>
-                        <span>$${b.amount.toFixed(2)}</span>
-                    </div>
-                `).join('') : '<p>No bids yet</p>';
-                
-                const aucContainer = document.getElementById('myAuctions');
-                aucContainer.innerHTML = data.auctions.length ? data.auctions.map(a => `
-                    <div class="log-entry">
-                        <span>${a.title}</span>
-                        <span>$${a.final_price.toFixed(2)}</span>
-                    </div>
-                `).join('') : '<p>No auctions created</p>';
-                
+                container.innerHTML += `<div class="log-entry"><strong>🤖 AI:</strong> ${data.response}</div>`;
+                container.scrollTop = container.scrollHeight;
             } catch(err) {
-                console.error('Error:', err);
+                container.innerHTML += `<div class="log-entry" style="color: red;">Error: ${err.message}</div>`;
             }
         }
         
-        loadHistory();
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') sendMessage();
+        });
     </script>
 </body>
 </html>

@@ -1,4 +1,16 @@
-# 🚀 BidMind AI - Real-Time Auction Engine
+# 🚀 BidMind AI - Complete Auction Platform
+
+## Features
+- ✅ Real-time bidding with WebSockets
+- ✅ AI price predictions (ML models)
+- ✅ Fraud detection
+- ✅ Smart bid recommendations
+- ✅ Auto-bidding bots
+- ✅ AI chat assistant (Groq)
+- ✅ Analytics dashboard with charts
+- ✅ Browser notifications
+- ✅ Image analysis
+- ✅ Mobile responsive
 
 A high-frequency auction platform integrating **WebSockets** for real-time communication and **Machine Learning** for fraud detection and price prediction.
 
@@ -17,5 +29,13 @@ A high-frequency auction platform integrating **WebSockets** for real-time commu
 1. `pip install -r requirements.txt`
 2. Add `GROQ_API_KEY` to `.env`
 3. Ensure `.pkl` models are in `/models`
-4. `uvicorn app.main:app --reload`
+4. `uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
 5. Open `http://localhost:8000/static/index.html`
+
+## navigation flow
+
+/ (Login) → /dashboard → /create → /auction/{id}
+                           ↓
+                    /analytics ← /history
+                           ↓
+                      /chat ← /bot
