@@ -14,6 +14,25 @@ BidMind AI transforms traditional auctions into an intelligent, real-time biddin
 
 ---
 
+## 🏃 How to Run
+1. `pip install -r requirements.txt`
+2. Add `GROQ_API_KEY` to `.env`
+3. Ensure `.pkl` models are in `/models`
+4. `uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
+5. Open `http://localhost:8000/static/index.html`
+
+## navigation flow
+
+/ (Login) → /dashboard → /create → /auction/{id}
+
+
+                           ↓
+                    /analytics ← /history
+
+
+                           ↓
+                      /chat ← /bot
+
 ## ✨ Key Features
 
 ### 🔐 User System
