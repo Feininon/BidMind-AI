@@ -12,9 +12,6 @@ A production-ready, AI-powered real-time auction platform with WebSocket bidding
 
 BidMind AI transforms traditional auctions into an intelligent, real-time bidding experience. Built for a **Web Dev/AI Intern** role, this project demonstrates full-stack development skills combined with practical AI/ML integration.
 
-**Live Demo:** [Coming Soon]  
-**Video Demo:** [Coming Soon]
-
 ---
 
 ## ✨ Key Features
